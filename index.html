@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node 1 Usage</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .status-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .connection-status {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .last-update {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glow), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-container {
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--surface-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .progress-cpu { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+        .progress-memory { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+        .progress-disk { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .progress-network { background: linear-gradient(90deg, #10b981, #059669); }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .network-metric {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .network-metric:hover {
+            background: var(--surface);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .network-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .network-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--error-color);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--surface-light);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px var(--glow); }
+            100% { box-shadow: 0 0 30px var(--glow), 0 0 40px var(--glow); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 2.5rem; }
+            .grid { grid-template-columns: 1fr; gap: 1rem; }
+            .card { padding: 1.5rem; }
+            .metric-value { font-size: 2.5rem; }
+            .network-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>Usage Monitor</h1>
+            <p>Echtzeit-Überwachung von unseren Nodes</p>
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="connection-status" id="connectionStatus">Verbinde...</span>
+                </div>
+                <div class="last-update" id="lastUpdate">--:--:--</div>
+            </div>
+        </header>
+
+        <div class="grid" id="metricsGrid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">CPU</h3>
+                    <div class="card-icon">🔥</div>
+                </div>
+                <div class="metric-value" id="cpuValue">--</div>
+                <div class="metric-label" id="cpuLabel">Prozessorauslastung</div>
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill progress-cpu" id="cpuProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Arbeitsspeicher</h3>
+                    <div class="card-icon">💾</div>
+                </div>
+                <div class="metric-value" id="memoryValue">--</div>
+                <div class="metric-label" id="memoryLabel">-- GB von -- GB</div>
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill progress-memory" id="memoryProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Festplatte</h3>
+                    <div class="card-icon">💿</div>
+                </div>
+                <div class="metric-value" id="diskValue">--</div>
+                <div class="metric-label" id="diskLabel">-- GB von -- GB</div>
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill progress-disk" id="diskProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <h3 class="card-title">Netzwerk</h3>
+                    <div class="card-icon">🌐</div>
+                </div>
+                <div class="network-grid">
+                    <div class="network-metric">
+                        <div class="network-value" id="downloadSpeed">--</div>
+                        <div class="network-label">Download</div>
+                    </div>
+                    <div class="network-metric">
+                        <div class="network-value" id="uploadSpeed">--</div>
+                        <div class="network-label">Upload</div>
+                    </div>
+                    <div class="network-metric">
+                        <div class="network-value" id="latency">--</div>
+                        <div class="network-label">Latenz</div>
+                    </div>
+                    <div class="network-metric">
+                        <div class="network-value" id="totalTraffic">--</div>
+                        <div class="network-label">Datenverkehr</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ServerMonitor {
+            constructor() {
+                this.apiUrl = 'https://YOUR-BACKEND.de/api';
+                this.isConnected = false;
+                this.updateInterval = null;
+                this.retryTimeout = null;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.connect();
+                this.startPolling();
+            }
+
+            async connect() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/health`);
+                    if (response.ok) {
+                        this.isConnected = true;
+                        this.updateConnectionStatus('Online', true);
+                        await this.fetchMetrics();
+                    } else {
+                        throw new Error('Server nicht erreichbar');
+                    }
+                } catch (error) {
+                    this.isConnected = false;
+                    this.updateConnectionStatus('Offline', false);
+                    this.showError('Verbindung zum Server fehlgeschlagen');
+                    this.scheduleRetry();
+                }
+            }
+
+            async fetchMetrics() {
+                if (!this.isConnected) return;
+
+                try {
+                    const response = await fetch(`${this.apiUrl}/metrics`);
+                    if (!response.ok) throw new Error('Fehler beim Abrufen der Metriken');
+                    
+                    const data = await response.json();
+                    this.updateUI(data);
+                    this.updateLastUpdate();
+                } catch (error) {
+                    console.error('Fehler beim Abrufen der Metriken:', error);
+                    this.isConnected = false;
+                    this.updateConnectionStatus('Verbindungsfehler', false);
+                    this.scheduleRetry();
+                }
+            }
+
+            updateUI(data) {
+                // CPU
+                document.getElementById('cpuValue').textContent = `${data.cpu.usage}%`;
+                document.getElementById('cpuProgress').style.width = `${data.cpu.usage}%`;
+                
+                // Memory
+                const memUsed = (data.memory.used / 1024 / 1024 / 1024).toFixed(1);
+                const memTotal = (data.memory.total / 1024 / 1024 / 1024).toFixed(1);
+                const memPercent = ((data.memory.used / data.memory.total) * 100).toFixed(0);
+                
+                document.getElementById('memoryValue').textContent = `${memPercent}%`;
+                document.getElementById('memoryLabel').textContent = `${memUsed} GB von ${memTotal} GB`;
+                document.getElementById('memoryProgress').style.width = `${memPercent}%`;
+                
+                // Disk
+                const diskUsed = (data.disk.used / 1024 / 1024 / 1024).toFixed(1);
+                const diskTotal = (data.disk.total / 1024 / 1024 / 1024).toFixed(1);
+                const diskPercent = ((data.disk.used / data.disk.total) * 100).toFixed(0);
+                
+                document.getElementById('diskValue').textContent = `${diskPercent}%`;
+                document.getElementById('diskLabel').textContent = `${diskUsed} GB von ${diskTotal} GB`;
+                document.getElementById('diskProgress').style.width = `${diskPercent}%`;
+                
+                // Network
+                document.getElementById('downloadSpeed').textContent = this.formatSpeed(data.network.download);
+                document.getElementById('uploadSpeed').textContent = this.formatSpeed(data.network.upload);
+                document.getElementById('latency').textContent = `${data.network.latency}ms`;
+                document.getElementById('totalTraffic').textContent = this.formatBytes(data.network.totalTraffic);
+            }
+
+            formatSpeed(bytesPerSecond) {
+                const mbps = bytesPerSecond / 1024 / 1024;
+                return `${mbps.toFixed(1)} MB/s`;
+            }
+
+            formatBytes(bytes) {
+                const tb = bytes / 1024 / 1024 / 1024 / 1024;
+                return `${tb.toFixed(1)} TB`;
+            }
+
+            updateConnectionStatus(status, isOnline) {
+                document.getElementById('connectionStatus').textContent = status;
+                const statusDot = document.getElementById('statusDot');
+                
+                if (isOnline) {
+                    statusDot.style.background = 'var(--success-color)';
+                    statusDot.style.boxShadow = '0 0 10px var(--success-color)';
+                } else {
+                    statusDot.style.background = 'var(--error-color)';
+                    statusDot.style.boxShadow = '0 0 10px var(--error-color)';
+                }
+            }
+
+            updateLastUpdate() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('de-DE');
+                document.getElementById('lastUpdate').textContent = `Zuletzt: ${timeString}`;
+            }
+
+            showError(message) {
+                console.error(message);
+                // Hier könnten weitere Error-Handling-Mechanismen implementiert werden
+            }
+
+            startPolling() {
+                if (this.updateInterval) clearInterval(this.updateInterval);
+                
+                this.updateInterval = setInterval(async () => {
+                    if (this.isConnected) {
+                        await this.fetchMetrics();
+                    } else {
+                        await this.connect();
+                    }
+                }, 3000);
+            }
+
+            scheduleRetry() {
+                if (this.retryTimeout) clearTimeout(this.retryTimeout);
+                
+                this.retryTimeout = setTimeout(async () => {
+                    await this.connect();
+                }, 5000);
+            }
+
+            destroy() {
+                if (this.updateInterval) clearInterval(this.updateInterval);
+                if (this.retryTimeout) clearTimeout(this.retryTimeout);
+            }
+        }
+
+        // Initialize the monitor
+        const monitor = new ServerMonitor();
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            monitor.destroy();
+        });
+    </script>
+</body>
+</html>
