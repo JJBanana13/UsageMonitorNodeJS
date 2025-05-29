@@ -1,11 +1,6 @@
-Sure! Here's a complete, ready-to-copy `README.md` for your project **UsageMonitorNodeJS** in English, including `pm2` usage and instructions on how to set the API URL in the frontend (`this.apiUrl = 'https://YOUR-BACKEND.de/api';`).
-
----
-
-````markdown
 # UsageMonitorNodeJS
 
-**UsageMonitorNodeJS** is a lightweight Node.js application that collects system usage information (CPU, RAM, etc.) and exposes it via an API. A simple HTML frontend is included to visualize the data.
+**UsageMonitorNodeJS** is a lightweight Node.js application that collects system usage information (CPU, RAM, etc.) and provides it via an API. A simple HTML frontend is included to visualize the data.
 
 ---
 
@@ -16,7 +11,7 @@ Sure! Here's a complete, ready-to-copy `README.md` for your project **UsageMonit
 ```bash
 git clone https://github.com/JJBanana13/UsageMonitorNodeJS.git
 cd UsageMonitorNodeJS
-````
+```
 
 2. **Install dependencies**
 
@@ -26,7 +21,7 @@ npm install
 
 ---
 
-## 🚀 Run the Server
+## 🚀 Run the Server (Development)
 
 You can start the server manually using:
 
@@ -34,7 +29,7 @@ You can start the server manually using:
 node server.js
 ```
 
-By default, the server runs on port `3000`. The system usage data will be available at:
+The API will be available at:
 
 ```
 http://localhost:3000/api
@@ -42,9 +37,9 @@ http://localhost:3000/api
 
 ---
 
-## ⚙️ Run with PM2 (for production use)
+## ⚙️ Run with PM2 (Production)
 
-If you want the server to keep running in the background and restart on crash or reboot, use [PM2](https://pm2.keymetrics.io/):
+To keep the server running in the background and restart it automatically on system boot or crash, use [PM2](https://pm2.keymetrics.io/).
 
 1. **Install PM2 globally**
 
@@ -58,7 +53,7 @@ npm install -g pm2
 pm2 start server.js --name usage-monitor
 ```
 
-3. **Save the process list and set up startup script**
+3. **Enable auto-start on boot**
 
 ```bash
 pm2 save
@@ -69,32 +64,32 @@ pm2 startup
 
 ## 🌐 Configure the Frontend
 
-The `index.html` file is a simple frontend that displays system usage stats.
+The `index.html` file is used to visualize the system usage data.
 
-📌 **IMPORTANT:** You need to set the correct API URL in the HTML file.
+> 🔧 **IMPORTANT:** You must set the correct API URL manually in the `index.html` file.
 
-Open `index.html` and look for the following line:
+Look for the following line:
 
 ```js
 this.apiUrl = 'https://YOUR-BACKEND.de/api';
 ```
 
-Replace `'https://YOUR-BACKEND.de/api'` with the actual URL of your backend, for example:
+Replace it with the actual URL of your backend. For example:
 
 ```js
 this.apiUrl = 'http://localhost:3000/api';
 ```
 
-Make sure this URL matches where your backend is hosted.
+Make sure this URL matches the address where your Node.js server is running.
 
 ---
 
 ## 🛠️ Technologies Used
 
-* Node.js
-* Express.js
-* HTML / CSS / JavaScript (Vanilla)
-* PM2 (optional for process management)
+- Node.js
+- Express.js
+- HTML / CSS / JavaScript (Vanilla)
+- PM2 (for process management, optional)
 
 ---
 
@@ -104,13 +99,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## 💡 Author
+## 👤 Author
 
-Made by [JJBanana13](https://github.com/JJBanana13)
-
-```
-
----
-
-Let me know if you'd also like a `LICENSE` file, a `.pm2.config.js`, or anything else to go with it.
-```
+Created by [JJBanana13](https://github.com/JJBanana13)
