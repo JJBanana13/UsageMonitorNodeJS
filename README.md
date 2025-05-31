@@ -1,5 +1,5 @@
 # UsageMonitorNodeJS
-
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/R5R213KNI5)
 **UsageMonitorNodeJS** is a lightweight Node.js application that collects system usage information (CPU, RAM, etc.) and provides it via an API. A simple HTML frontend is included to visualize the data.
 
 ---
