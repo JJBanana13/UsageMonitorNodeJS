@@ -95,7 +95,7 @@ Make sure this URL matches the address where your Node.js server is running.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
